@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+#include <cstdlib>
 #include <EGL/egl.h>
 #include <GLES2/gl2.h>
 
@@ -49,7 +49,6 @@ bool shader::CompileShader(
 
       size_t replaced_pos = str_replacement_map.find(REPLACEMENT_TAG, pos);
       if (replaced_pos == std::string::npos || replaced_pos > pos) {
-
         str.replace(pos, it->first.length(), it->second);
         str_replacement_map.replace(pos, it->first.length(), it->first.length(),
                                     REPLACEMENT_TAG);

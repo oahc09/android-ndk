@@ -20,8 +20,11 @@
 //--------------------------------------------------------------------------------
 // includes
 //--------------------------------------------------------------------------------
-#include <unistd.h>
 #include "GLContext.h"
+
+#include <string.h>
+#include <unistd.h>
+
 #include "gl3stub.h"
 
 namespace ndk_helper {
@@ -34,7 +37,8 @@ namespace ndk_helper {
 // Ctor
 //--------------------------------------------------------------------------------
 GLContext::GLContext()
-    : display_(EGL_NO_DISPLAY),
+    : window_(nullptr),
+      display_(EGL_NO_DISPLAY),
       surface_(EGL_NO_SURFACE),
       context_(EGL_NO_CONTEXT),
       screen_width_(0),
@@ -89,11 +93,19 @@ bool GLContext::InitEGLSurface() {
    * Below, we select an EGLConfig with at least 8 bits per color
    * component compatible with on-screen windows
    */
-  const EGLint attribs[] = {
-      EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT,  // Request opengl ES2.0
-      EGL_SURFACE_TYPE,    EGL_WINDOW_BIT,     EGL_BLUE_SIZE, 8,
-      EGL_GREEN_SIZE,      8,                  EGL_RED_SIZE,  8,
-      EGL_DEPTH_SIZE,      24,                 EGL_NONE};
+  const EGLint attribs[] = {EGL_RENDERABLE_TYPE,
+                            EGL_OPENGL_ES2_BIT,  // Request opengl ES2.0
+                            EGL_SURFACE_TYPE,
+                            EGL_WINDOW_BIT,
+                            EGL_BLUE_SIZE,
+                            8,
+                            EGL_GREEN_SIZE,
+                            8,
+                            EGL_RED_SIZE,
+                            8,
+                            EGL_DEPTH_SIZE,
+                            24,
+                            EGL_NONE};
   color_size_ = 8;
   depth_size_ = 24;
 
@@ -102,11 +114,19 @@ bool GLContext::InitEGLSurface() {
 
   if (!num_configs) {
     // Fall back to 16bit depth buffer
-    const EGLint attribs[] = {
-        EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT,  // Request opengl ES2.0
-        EGL_SURFACE_TYPE,    EGL_WINDOW_BIT,     EGL_BLUE_SIZE, 8,
-        EGL_GREEN_SIZE,      8,                  EGL_RED_SIZE,  8,
-        EGL_DEPTH_SIZE,      16,                 EGL_NONE};
+    const EGLint attribs[] = {EGL_RENDERABLE_TYPE,
+                              EGL_OPENGL_ES2_BIT,  // Request opengl ES2.0
+                              EGL_SURFACE_TYPE,
+                              EGL_WINDOW_BIT,
+                              EGL_BLUE_SIZE,
+                              8,
+                              EGL_GREEN_SIZE,
+                              8,
+                              EGL_RED_SIZE,
+                              8,
+                              EGL_DEPTH_SIZE,
+                              16,
+                              EGL_NONE};
     eglChooseConfig(display_, attribs, &config_, 1, &num_configs);
     depth_size_ = 16;
   }
@@ -173,6 +193,7 @@ void GLContext::Terminate() {
   display_ = EGL_NO_DISPLAY;
   context_ = EGL_NO_CONTEXT;
   surface_ = EGL_NO_SURFACE;
+  window_ = nullptr;
   context_valid_ = false;
 }
 
